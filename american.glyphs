@@ -1,0 +1,144 @@
+# Glyph map for The New Oxford American Dictionary (american.mobi).
+#
+# NOAD-for-Kindle renders its pronunciation respelling, section headings and
+# sense markers as one tiny GIF per character.  This table replaces them with
+# real text, which makes the result searchable, selectable and legible at any
+# font size.  Derived by decoding known pronunciations (lamb, father, though,
+# ship, measure, loch, sing, boot, book, water, machine, ...) until every
+# transcription matched NOAD.
+#
+# Format: <recindex>[,<recindex>...] TAB <replacement> [TAB <comment>]
+# A comma-separated list matches that run of consecutive images.
+# No replacement field means "drop it"; \s in a replacement means a space.
+# Lines starting with # are ignored.
+# Unmapped images are still extracted to res/ and referenced normally.
+
+# --- pronunciation delimiters and stress ---------------------------------
+10	|	between-pronunciation bars
+46	|	italic bar, used in usage notes
+1060	|
+54	ˈ	primary stress
+874	ˈ	italic primary stress
+58	ˌ	secondary stress
+37	;\s	separates variant pronunciations (\s = a literal space)
+111	-
+
+# --- respelling vowels ----------------------------------------------------
+109	a
+12	ā
+56	ä
+107	e
+113	ē
+64	i
+130	ī
+97	o
+86	ō
+99	ŏ
+76	ô
+146	u
+39	ə
+52	ə
+244	œ
+97,86	o͞o	"boot", "cute" -- macron spanning both o's
+97,99	o͝o	"book"
+
+# --- respelling consonants ------------------------------------------------
+78	b
+88	d
+101	f
+82	g
+103	h
+140	j
+92	k
+68	l
+128	m
+74	n
+66	p
+62	r
+105	s
+60	t
+90	v
+95	w
+136	y
+138	z
+
+# NOAD writes its digraph consonants as capitals: CH, KH, NG, SH, TH, ZH,
+# and uses Y for the French u / German ue vowel.
+167	C
+156	G
+72	H
+144	H
+70	K
+154	N
+126	S
+142	T
+158	Z
+944	Y
+171	T	source already wraps these in <u>: voiced "th", as in "though"
+173	H
+171,173	TH
+
+80	(
+84	)
+
+# --- section headings (shown as <SMALL CAPS> images in the original) ------
+20	<b>SPECIAL USAGE</b>
+23	<b>PHRASES</b>
+41	<b>ORIGIN</b>
+45	<b>USAGE</b>
+94	<b>INFO</b>
+125	<b>DERIVATIVES</b>
+166	<b>THE RIGHT WORD</b>
+193	<b>PHRASAL VERB</b>
+
+# --- sense markers and punctuation ---------------------------------------
+14	▪
+32	▪
+4440	▪
+21	▸
+24	▫
+282	…
+1484	…
+50	—
+169	—
+432	—
+434	—
+828	—
+169,169	—	doubled to make a long dash
+432,432	—
+434,434	—
+828,828	—
+202	−	superscript minus, in chemical formulae
+204	–	bond dash
+
+# --- Greek etymons set as whole-word images -------------------------------
+187	kephalē
+216	khrōma
+228	morphē
+506	ōps
+576	anēr
+578	gunē
+640	hēlios
+652	anthrōpos
+670	phōnē
+712	gē
+792	(tekhnē)
+1792	zōion
+1794	sōma
+3356	prōtos
+
+# --- spirantized Semitic letters; the source already wraps these in <u> ---
+117	b
+380	p
+492	t
+816	k
+1008	d
+
+# --- 1px rules and spacers: the surrounding <div>s do the work ------------
+17
+19
+28
+31
+36
+227
+1299
