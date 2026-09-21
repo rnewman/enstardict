@@ -1,6 +1,5 @@
 # Source dictionaries and third-party archives
-*.mobi
-*.zip
+input/
 
 # Converted output
 noad-stardict/
