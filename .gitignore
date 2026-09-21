@@ -20,7 +20,6 @@ glyphrecover/*_all.json
 glyphrecover/votes.json
 glyphrecover/recon.json
 glyphrecover/glyphmap_add.tsv
-glyphrecover/american_full.glyphs
 glyphrecover/flagged.txt
 glyphrecover/*.png
 

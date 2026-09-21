@@ -48,7 +48,8 @@ On NOAD: 86,080 articles, 43,352 synonyms, ~13 MB `.dict.dz`, about 5 seconds.
 
 NOAD-for-Kindle sets its pronunciation respelling, its section headings and its
 sense markers as **one tiny GIF per character** — 1.42M image references.
-`american.glyphs` maps them back to text, so `|ˈzīˌmərjē|` is real, searchable,
+`american.glyphs` maps them back to text (generated: `glyphrecover/base.glyphs`
+is the hand-made core, the rest is recovered), so `|ˈzīˌmərjē|` is real, searchable,
 selectable characters rather than 11 images:
 
 ```
@@ -115,7 +116,7 @@ make review    # contact sheets for anything the pipeline could not settle
 | `dots_all.json` | `runall.py dots` | the same with the second model |
 | `votes.json` | `compose.py`, `marks_below.tsv`, `overrides.tsv` | vote the readings into labels, compose characters |
 | `glyphmap_add.tsv` | `emit_map.py` | reconstruct every image as `recindex TAB text` |
-| `american_full.glyphs` | | base map + additions |
+| `../american.glyphs` | | `base.glyphs` + additions: the shipped map |
 | `dict` | `mobidict2stardict.py` | rebuild against the completed map |
 
 The two OCR models keep separate virtualenvs — jina-ocr-v1 wants current

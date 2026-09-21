@@ -10,7 +10,7 @@
 # Stages are ordinary file rules, so re-running only redoes what is stale.
 
 MOBI    ?= ../american.mobi
-GLYPHS  ?= ../american.glyphs
+GLYPHS  ?= base.glyphs      # the hand-made core map; the full one is generated
 OUT     ?= ../noad-stardict
 CALIBRE ?= $(firstword $(wildcard /Applications/calibre.app/Contents/MacOS/calibre-debug) \
                        $(shell command -v calibre-debug 2>/dev/null))
@@ -52,13 +52,15 @@ votes.json: compose.py pipe.pkl decomp.pkl jina_all.json dots_all.json $(HAND)
 glyphmap_add.tsv: emit_map.py votes.json $(wildcard overrides.tsv)
 	$(PY) emit_map.py
 
-american_full.glyphs: $(GLYPHS) glyphmap_add.tsv
+# The shipped map is base + recovered, written where the converter finds it
+# automatically (it looks for <mobi>.glyphs beside the .mobi).
+../american.glyphs: $(GLYPHS) glyphmap_add.tsv
 	cat $(GLYPHS) glyphmap_add.tsv > $@
 
 # 7. rebuild the dictionary against the completed map
 .PHONY: dict
-dict: american_full.glyphs $(MOBI) ../mobidict2stardict.py
-	$(PY) ../mobidict2stardict.py $(MOBI) -o $(OUT) -g american_full.glyphs
+dict: ../american.glyphs $(MOBI) ../mobidict2stardict.py
+	$(PY) ../mobidict2stardict.py $(MOBI) -o $(OUT)
 
 report: votes.json
 	@$(PY) evalfinal.py
@@ -84,6 +86,6 @@ venvs:
 
 clean:
 	rm -f pipe.pkl decomp.pkl votes.json recon.json glyphmap_add.tsv \
-	      american_full.glyphs flagged.txt *.png
+	      flagged.txt *.png
 distclean: clean
 	rm -rf glyphs glyphs.json jina_all.json dots_all.json
