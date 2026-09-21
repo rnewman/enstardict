@@ -1,10 +1,11 @@
-# dictionaries
+# enstardict
 
 Tools for turning Kindle/Mobipocket dictionaries into StarDict, and for
 recovering the text of the inline artwork they are set in.
 
-Built against *The New Oxford American Dictionary* (`american.mobi`), but the
-converter is general; the glyph map is per-dictionary.
+My motivation for building this was to space-shift *The New Oxford American
+Dictionary* (`input/american.mobi`, not checked in), but the converter is
+general. The glyph map is per-dictionary.
 
 ## mobidict2stardict.py
 
@@ -16,7 +17,7 @@ under calibre's interpreter automatically, since that is where the parser
 lives.
 
 ```sh
-./mobidict2stardict.py american.mobi -o noad-stardict/
+./mobidict2stardict.py input/american.mobi -g american.glyphs -o noad-stardict/
 ```
 
 | option | |
@@ -44,16 +45,16 @@ Only grammar labels take that grey-italic-then-bold shape, so the space can be
 put back without touching the blue example sentences or word splits like
 `televi`+`sion`.
 
-One thing worth knowing: calibre's `read_index()` truncates ORDT2 character
-tables to 8 bits, which turns every space in a headword into `?` — `-- a pop`
-comes out as `-?-?a?pop`. `Mobi._ordt` rebuilds that table as UTF-16BE and
-drives calibre's record parser directly.
+calibre's `read_index()` truncates ORDT2 character tables to 8 bits, which
+turns every space in a headword into `?` — `-- a pop` comes out as `-?-?a?pop`.
+`Mobi._ordt` rebuilds that table as UTF-16BE and drives calibre's record parser
+directly.
 
 On NOAD: 86,080 articles, 43,352 synonyms, ~13 MB `.dict.dz`, about 5 seconds.
 
 ## american.glyphs
 
-NOAD-for-Kindle sets its pronunciation respelling, its section headings and its
+NOAD-for-Kindle sets its pronunciation respelling, its section headings, and its
 sense markers as **one tiny GIF per character** — 1.42M image references.
 `american.glyphs` maps them back to text (generated: `glyphrecover/base.glyphs`
 is the hand-made core, the rest is recovered), so `|ˈzīˌmərjē|` is real, searchable,
@@ -76,46 +77,30 @@ etymology transliterations — come from `glyphrecover/`.
 For a dictionary with no map yet, `--dump-glyphs DIR` writes the most-used
 images alongside a commented starter table to fill in.
 
-One constraint on what goes in the right-hand column: **a replacement is only
-as good as the reader's font**. The obvious characters for the sense markers
-are ▪/▸/▫, and they are the wrong answer — Helvetica, Times and the macOS
-system font have no U+25AA or U+25AB, and U+25B8 is missing from every font
-checked but SF, so all three come out as missing-glyph boxes in front of every
-sense. They are now `•`, `›` and `◊`, which are in Mac Roman, cp1252 and WGL4
-and so are about as safe as ASCII. Anything chosen for punctuation or
-structure should come from that subset; letters and diacritics are content and
-have to stay correct even when coverage is thinner (`ˈ` and `ˌ` are absent from
-Times, and the combining double macron of `o͞o` from Georgia, but there is
-nothing better to use).
-
 ## glyphrecover/
 
 Recovers the ~4,600 remaining images: Greek, Latin, Old English, Sanskrit,
 Arabic and Hebrew etymons set as whole-word art.
 
-Off-the-shelf OCR reads the letters but silently drops the diacritics that
-carry the information. Scored on 24 hand-read words: Tesseract 5 with
-`script/Latin` manages 56% on isolated glyphs; jina-ocr-v1 gets 19/24 and
-dots.ocr 18/24 — and both fail on the *same four*, `ḥ`, `ṣ`, `ǣ`, `ł`. At 25%
-word error over 4,574 words that is ~1,100 wrong etymons, so neither is usable
-on its own.
+Off-the-shelf OCR reads the letters but silently drops diacritics. Scored on 24
+hand-read words: Tesseract 5 with `script/Latin` manages 56% on isolated
+glyphs; jina-ocr-v1 gets 19/24 and dots.ocr 18/24 — and both fail on the *same
+four*, `ḥ`, `ṣ`, `ǣ`, `ł`. At 25% word error over 4,574 words that is ~1,100
+wrong etymons, so neither is usable on its own.
 
-Instead the corpus is solved rather than read. It is a single font at a single
-size, so the images are segmented into glyphs and clustered by shape — 4,574
-words collapse to ~1,300 shapes, which decompose further into ~690 base letters
-and ~87 marks. Each shape appears in many words, so *voting* both models'
-readings across every word a shape occurs in cancels the random slips. The
-systematic ones are then detectable: if two base clusters vote the same letter
-but one is visibly taller, the taller one is carrying a mark fused to the
-letter that OCR dropped. Only what OCR is structurally blind to gets read by
-eye — the below-marks, of which there are three.
+The corpus is a single font at a single size, so we segment the images into
+glyphs and cluster by shape — 4,574 words collapse to ~1,300 shapes, which
+decompose further into ~690 base letters and ~87 marks. Each shape appears in
+many words, so *voting* jina's and dots' readings across every word a shape
+occurs in cancels the random slips. The systematic ones are then detectable: if
+two base clusters vote the same letter but one is visibly taller, the taller
+one is carrying a mark fused to the letter that OCR dropped. Only what OCR is
+structurally blind to gets read by eye — the below-marks, of which there are
+three.
 
 See `glyphrecover/README.md` for the details and the measurements.
 
 ### Running it
-
-The stages are a build, not a sequence to type. Each is a file rule with real
-prerequisites, so re-running only redoes what is stale.
 
 ```sh
 cd glyphrecover
@@ -139,12 +124,10 @@ make review    # contact sheets for anything the pipeline could not settle
 | `dict` | `mobidict2stardict.py` | rebuild against the completed map |
 
 The two OCR models keep separate virtualenvs — jina-ocr-v1 wants current
-transformers, dots.ocr wants 4.51.3 and a directory name without a period —
-and that is encoded in the rules rather than remembered.
+transformers, dots.ocr wants 4.51.3 and a directory name without a period.
 
 `overrides.tsv` (`class TAB text`, same format as the glyph map) is picked up
-automatically when present, so corrections made after looking at `make review`
-re-enter the build instead of being applied by hand.
+automatically when present, so corrections can enter the build.
 
 Variables: `MOBI`, `GLYPHS`, `OUT`, `PY`, `CALIBRE`, `JINA_PY`, `DOTS_PY`.
 
