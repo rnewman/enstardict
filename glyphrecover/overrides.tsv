@@ -1,0 +1,28 @@
+# Hand-read corrections for shape classes the OCR consensus cannot reach.
+#
+# Format: <class index> TAB <text> [TAB <expected shape hash>]
+# The hash is checked against the class bitmap at build time; if the clustering
+# changes and a class no longer matches, the override is skipped with a warning
+# rather than silently applied to the wrong shape.  Get hashes with:
+#
+#   python3 -c "import pickle; from pipeline import class_hash; \
+#     w,g = pickle.load(open('pipe.pkl','rb')); print(class_hash(g[72]['arr']))"
+#
+# These came out of `make review`: both OCR models strip a macron that is fused
+# to the letter it sits on, so the class reads as a bare letter.  flag.py finds
+# them by noticing two base clusters that vote the same letter where one is
+# visibly taller.
+
+# i with the macron fused to the stem: dīwān, dakaitī, rājñī, līhtan, tīd, dīc
+72	ī	3a3ebee8e971
+87	ī	3a3ebee8e971
+88	ī	d26badeff13c
+
+# Greek geōgraphikos / geōgraphos / geōgraphia: "eog" merged, macron on the o
+374	eōg	acac0fdb2231
+
+# Hindi dakaitī: "it" merged, so the t is otherwise lost
+647	it	401531d1c093
+
+# Old Norse bǫllr / bǫrkr: "bo" merged, ogonek under the o
+442	bǫ	f9d44baff1c0

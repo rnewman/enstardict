@@ -169,6 +169,8 @@ final = {}
 for c in range(len(groups)):
     v = compose(c)
     if v is not None: final[c] = v
+from pipeline import load_overrides
+final.update(load_overrides(groups))
 json.dump({'final': {str(k): v for k, v in final.items()},
            'blabel': {str(k): v for k, v in blabel.items()},
            'mlabel': mlabel,

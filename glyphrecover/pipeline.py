@@ -1,5 +1,5 @@
 """Segment every glyph image into characters and cluster identical shapes."""
-import json, numpy as np, collections, pickle
+import json, numpy as np, collections, pickle, hashlib, sys
 from PIL import Image
 from scipy import ndimage
 SLOPE = 0.30
@@ -53,6 +53,27 @@ def glyphs(mask, slope=SLOPE):
     bases.sort(key=lambda b: b['cx'])
     return [dict(sub=b['m'][b['y0']:b['y1']+1, b['x0']:b['x1']+1],
                  x0=int(b['x0']), x1=int(b['x1']), y0=int(b['y0']), y1=int(b['y1'])) for b in bases]
+
+def class_hash(arr):
+    """Stable id for a shape class, so an override cannot silently mis-apply."""
+    return hashlib.sha1(arr.tobytes() + repr(arr.shape).encode()).hexdigest()[:12]
+
+def load_overrides(groups, path='overrides.tsv'):
+    """class index TAB text [TAB expected shape hash]; hand-read corrections."""
+    out = {}
+    try: fh = open(path, encoding='utf-8')
+    except FileNotFoundError: return out
+    for line in fh:
+        line = line.rstrip('\n')
+        if not line.strip() or line.lstrip().startswith('#'): continue
+        p = line.split('\t')
+        gi = int(p[0]); text = (p[1] if len(p) > 1 else '').replace('\\s', ' ')
+        want = p[2].strip() if len(p) > 2 else ''
+        if want and (gi >= len(groups) or class_hash(groups[gi]['arr']) != want):
+            print('overrides: class %d no longer matches %s -- skipped' % (gi, want), file=sys.stderr)
+            continue
+        out[gi] = text
+    return out
 
 def close(a, b, tol=0.97):
     if abs(a.shape[0]-b.shape[0]) > 1 or abs(a.shape[1]-b.shape[1]) > 1: return False
