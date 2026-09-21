@@ -1,0 +1,14 @@
+# Below-mark clusters, read by eye: OCR strips these, so they cannot be voted.
+b0	dotbelow
+b1	dotbelow
+b2	dotbelow
+b3	cedilla
+b4	dotbelow
+b5	dotbelow
+b6	dotbelow
+b7	dotbelow
+b8	underline
+b9	cedilla
+b10	dotbelow
+b11	underline
+b12	cedilla

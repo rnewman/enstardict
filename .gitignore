@@ -1,0 +1,31 @@
+# Source dictionaries and third-party archives
+*.mobi
+*.zip
+
+# Converted output
+noad-stardict/
+out*/
+*.ifo
+*.idx
+*.dict
+*.dict.dz
+*.syn
+res/
+
+# glyphrecover working files: extracted art, OCR results, pickles, contact sheets
+glyphrecover/glyphs/
+glyphrecover/glyphs.json
+glyphrecover/*.pkl
+glyphrecover/*_all.json
+glyphrecover/votes.json
+glyphrecover/recon.json
+glyphrecover/glyphmap_add.tsv
+glyphrecover/flagged.txt
+glyphrecover/*.png
+
+# Models and virtualenvs
+jina-ocr-v1/
+dots.ocr/
+DotsOCR
+ocrenv*/
+tessdata/
