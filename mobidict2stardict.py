@@ -193,6 +193,13 @@ FENCE = b'\x01'
 RE_JOIN = re.compile(rb'\x01\s*((?:<[^>]+>\s*)*)\x01')
 RE_TAG = re.compile(rb'<[^>]+>')
 RE_EMPTY = re.compile(rb'<(b|i|u|sub|sup)></\1>|<font\b[^>]*></font>')
+# Kindle butts the grey grammar label straight onto the bold inflected form
+# with no space of its own -- "pl.mice", "pastran", "past part.run" -- 5,058
+# times, so its renderer must be separating them at the tag boundary.  Only
+# grammar labels ever take this grey-italic-then-bold shape (example sentences
+# are blue, and word splits like "televi"+"sion" have no closing </font>), so
+# the repair is exact.  Labels that already end in a space are left alone.
+RE_LABEL = re.compile(rb'(<font color="#555555"><i>[^<]{1,40}(?<!\s)</i></font>)(<b\b)')
 
 
 def read_glyph_map(path):
@@ -225,7 +232,8 @@ class Cleaner:
         self._dims = {}
 
     def __call__(self, body):
-        out = RE_MASTER.sub(self._dispatch, body.replace(FENCE, b''))
+        body = RE_LABEL.sub(rb'\1 \2', body.replace(FENCE, b''))
+        out = RE_MASTER.sub(self._dispatch, body)
         out = RE_JOIN.sub(lambda m: b''.join(RE_TAG.findall(m.group(1))), out)
         out = out.replace(FENCE, b'')
         return RE_EMPTY.sub(b'', out).strip()

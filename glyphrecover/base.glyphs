@@ -92,11 +92,17 @@
 193	<b>PHRASAL VERB</b>
 
 # --- sense markers and punctuation ---------------------------------------
-14	▪
-32	▪
-4440	▪
-21	▸
-24	▫
+# Markers have to come from the subset of Unicode that ordinary body fonts
+# actually cover, or they render as missing-glyph boxes.  Helvetica, Times and
+# the macOS system font have no U+25AA/U+25AB, and U+25B8 is absent from every
+# font checked except SF -- so the obvious squares-and-triangle set is exactly
+# the wrong choice.  These three are in Mac Roman, cp1252 and WGL4, i.e. as
+# safe as ASCII, and still give three distinct nesting levels.
+14	•	sense
+32	•
+4440	•
+21	›	sub-sense
+24	◊	sub-sub-sense
 282	…
 1484	…
 50	—

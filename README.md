@@ -37,6 +37,13 @@ recorded in the index become a `.syn` file, `filepos` cross-references become
 `bword://` links, and anything still set as an image is extracted to `res/`
 beside the dictionary, where GoldenDict looks for it.
 
+The cleaner also repairs one thing the source gets wrong: Kindle butts its grey
+grammar label straight onto the following bold form with no space — `pl.mice`,
+`pastran` — in 5,058 places, relying on its own renderer to separate them.
+Only grammar labels take that grey-italic-then-bold shape, so the space can be
+put back without touching the blue example sentences or word splits like
+`televi`+`sion`.
+
 One thing worth knowing: calibre's `read_index()` truncates ORDT2 character
 tables to 8 bits, which turns every space in a headword into `?` — `-- a pop`
 comes out as `-?-?a?pop`. `Mobi._ordt` rebuilds that table as UTF-16BE and
@@ -68,6 +75,18 @@ etymology transliterations — come from `glyphrecover/`.
 
 For a dictionary with no map yet, `--dump-glyphs DIR` writes the most-used
 images alongside a commented starter table to fill in.
+
+One constraint on what goes in the right-hand column: **a replacement is only
+as good as the reader's font**. The obvious characters for the sense markers
+are ▪/▸/▫, and they are the wrong answer — Helvetica, Times and the macOS
+system font have no U+25AA or U+25AB, and U+25B8 is missing from every font
+checked but SF, so all three come out as missing-glyph boxes in front of every
+sense. They are now `•`, `›` and `◊`, which are in Mac Roman, cp1252 and WGL4
+and so are about as safe as ASCII. Anything chosen for punctuation or
+structure should come from that subset; letters and diacritics are content and
+have to stay correct even when coverage is thinner (`ˈ` and `ˌ` are absent from
+Times, and the combining double macron of `o͞o` from Georgia, but there is
+nothing better to use).
 
 ## glyphrecover/
 
